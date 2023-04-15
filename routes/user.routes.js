@@ -1,79 +1,49 @@
 const express = require('express');
-const { faker } = require('@faker-js/faker');
+const UserService = require('../services/user.service');
+const service = new UserService();
 const router = express.Router();
 
 router.get('/', (req, res) => {
-  const { limit, offset } = req.query;
-  const { size } = req.query;
-  const usersArray = [];
-  const limitSize = size || 10;
-  if (offset && limit) {
-    res.json({
-      limit,
-      offset,
-    });
-  } else {
-    for (let index = 0; index < limitSize; index++) {
-      usersArray.push({
-        name: faker.name.fullName(),
-        username: `${faker.hacker.noun()}${faker.random.numeric(3)}`,
-        age: faker.random.numeric(2),
-      });
-    }
-    res.json(usersArray);
-  }
+  const users = service.find();
+  res.json(users);
 });
 
 router.get('/:id', (req, res) => {
   const { id } = req.params;
-  if (parseInt(id) > 99 || parseInt(id) < 0) {
-    res.status(404).json({
-      msg: 'Not found',
+  const user = service.findOne(id);
+  if (!user) {
+    res.json({
+      msg: 'Not found!',
     });
   } else {
-    res.json({
-      id,
-      name: faker.name.fullName(),
-      username: `${faker.hacker.noun()}${faker.random.numeric(3)}`,
-      age: faker.random.numeric(2),
-    });
+    res.json(user);
   }
 });
 
 router.post('/', (req, res) => {
   const body = req.body;
-  res.status(201).json({
-    msg: 'Created',
-    data: body,
-  });
+  const newUser = service.create(body);
+  res.status(201).json(newUser);
 });
 
 router.put('/:id', (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  res.json({
-    msg: 'Updated',
-    id: id,
-    data: body,
-  });
+  const user = service.update(id, body);
+  res.json(user);
 });
 
 router.patch('/:id', (req, res) => {
   const { id } = req.params;
   const body = req.body;
-  res.json({
-    msg: 'Updated',
-    id: id,
-    data: body,
-  });
+  const user = service.update(id, body);
+  res.json(user);
 });
 
 router.delete('/:id', (req, res) => {
   const { id } = req.params;
-  res.json({
-    msg: 'Deleted',
-    id: id,
-  });
+  const response = service.delete(id);
+  res.json(response);
 });
 
 module.exports = router;
