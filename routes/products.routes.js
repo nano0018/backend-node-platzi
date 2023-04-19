@@ -1,5 +1,11 @@
 const express = require('express');
 const ProductService = require('../services/product.service');
+const { validatorHandler } = require('../middlewares/validator.handler');
+const {
+  createProductSchema,
+  getProductSchema,
+  updateProductSchema,
+} = require('../schemas/product.schema');
 const service = new ProductService();
 const router = express.Router();
 
@@ -16,50 +22,80 @@ router.get('/filter', (req, res) => {
 });
 
 // Luego dinámicos
-router.get('/:id', async (req, res, next) => {
-  try {
-    const { id } = req.params;
-    const product = await service.findOne(id);
-    if (!product) {
-      res.json({
-        msg: 'Not found!',
-      });
-    } else {
-      res.json(product);
+router.get(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const product = await service.findOne(id);
+      if (!product) {
+        res.json({
+          msg: 'Not found!',
+        });
+      } else {
+        res.json(product);
+      }
+    } catch (error) {
+      next(error);
     }
-  } catch (error) {
-    next(error);
   }
-});
+);
 
-router.post('/', async (req, res) => {
-  const body = req.body;
-  const newProduct = await service.create(body);
-  res.status(201).json(newProduct);
-});
-
-router.put('/:id', async (req, res) => {
-  const { id } = req.params;
-  const body = req.body;
-  const product = await service.update(id, body);
-  res.json(product);
-});
-
-router.patch('/:id', async (req, res, next) => {
-  try {
-    const { id } = req.params;
+router.post(
+  '/',
+  validatorHandler(createProductSchema, 'body'),
+  async (req, res) => {
     const body = req.body;
-    const product = await service.update(id, body);
-    res.json(product);
-  } catch (error) {
-    next(error);
+    const newProduct = await service.create(body);
+    res.status(201).json(newProduct);
   }
-});
+);
 
-router.delete('/:id', async (req, res) => {
-  const { id } = req.params;
-  const response = await service.delete(id);
-  res.json(response);
-});
+router.put(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const body = req.body;
+      const product = await service.update(id, body);
+      res.json(product);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.patch(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  validatorHandler(updateProductSchema, 'body'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const body = req.body;
+      const product = await service.update(id, body);
+      res.json(product);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.delete(
+  '/:id',
+  validatorHandler(getProductSchema, 'params'),
+  async (req, res, next) => {
+    try {
+      const { id } = req.params;
+      const response = await service.delete(id);
+      res.json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 module.exports = router;
