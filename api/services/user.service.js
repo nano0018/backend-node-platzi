@@ -1,5 +1,5 @@
 const { faker } = require('@faker-js/faker');
-
+const { getDBConnection } = require('../libs/postgres');
 class UserService {
   constructor() {
     this.users = [];
@@ -24,8 +24,10 @@ class UserService {
     this.users.push(newUser);
     return newUser;
   }
-  find() {
-    return this.users;
+  async find() {
+    const client = await getDBConnection();
+    const queryDB = await client.query('SELECT * FROM tasks');
+    return queryDB.rows;
   }
   findOne(id) {
     return this.users.find((user) => user.id === id);
@@ -35,10 +37,10 @@ class UserService {
     if (index === -1) {
       throw new Error('Product not found');
     }
-    const product = this.users[index]
+    const product = this.users[index];
     this.users[index] = {
       ...product,
-      ...changes
+      ...changes,
     };
     return this.users[index];
   }

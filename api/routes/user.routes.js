@@ -9,12 +9,12 @@ const {
 const service = new UserService();
 const router = express.Router();
 
-router.get('/', (req, res) => {
-  const users = service.find();
+router.get('/', async (req, res) => {
+  const users = await service.find();
   res.json(users);
 });
 
-router.get('/:id', validatorHandler(getUserSchema, 'params'), (req, res) => {
+router.get('/:id', validatorHandler(getUserSchema, 'params'), async (req, res) => {
   const { id } = req.params;
   const user = service.findOne(id);
   if (!user) {
