@@ -1,20 +1,10 @@
 const { faker } = require('@faker-js/faker');
-const { getDBConnection } = require('../libs/postgres');
+const { pool } = require('../libs/postgres.pool');
 class UserService {
   constructor() {
     this.users = [];
-    this.generate();
-  }
-  generate() {
-    const limit = 100;
-    for (let index = 0; index < limit; index++) {
-      this.users.push({
-        id: faker.datatype.uuid(),
-        name: faker.name.fullName(),
-        username: `${faker.hacker.noun()}${faker.random.numeric(3)}`,
-        age: faker.random.numeric(2),
-      });
-    }
+    this.pool = pool;
+    this.pool.on('error', (error) => console.error(error));
   }
   create(data) {
     const newUser = {
@@ -25,9 +15,9 @@ class UserService {
     return newUser;
   }
   async find() {
-    const client = await getDBConnection();
-    const queryDB = await client.query('SELECT * FROM tasks');
-    return queryDB.rows;
+    const queryDB = 'SELECT * FROM tasks';
+    const res = await this.pool.query(queryDB);
+    return res.rows;
   }
   findOne(id) {
     return this.users.find((user) => user.id === id);

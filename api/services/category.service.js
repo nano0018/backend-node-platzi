@@ -1,20 +1,13 @@
 const { faker } = require('@faker-js/faker');
+const { pool } = require('../libs/postgres.pool');
 
 class CategoryService {
   constructor() {
     this.categories = [];
-    this.generate();
+    this.pool = pool;
+    this.pool.on('error', (error) => console.error(error));
   }
-  generate() {
-    const limit = 20;
-    for (let index = 0; index < limit; index++) {
-      this.categories.push({
-        id: faker.datatype.uuid(),
-        name: faker.commerce.department(),
-        img: faker.image.imageUrl(),
-      });
-    }
-  }
+
   create(data) {
     const newCategory = {
       id: faker.datatype.uuid(),
@@ -23,8 +16,10 @@ class CategoryService {
     this.categories.push(newCategory);
     return newCategory;
   }
-  find() {
-    return this.categories;
+  async find() {
+    const queryDB = 'SELECT * FROM tasks';
+    const res = await this.pool.query(queryDB);
+    return res.rows;
   }
   findOne(id) {
     return this.categories.find((category) => category.id === id);
