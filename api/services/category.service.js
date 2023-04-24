@@ -1,47 +1,33 @@
-const { faker } = require('@faker-js/faker');
-const { pool } = require('../libs/postgres.pool');
+const { models } = require('../libs/sequelize');
+const boom = require('@hapi/boom');
 
 class CategoryService {
   constructor() {
     this.categories = [];
-    this.pool = pool;
-    this.pool.on('error', (error) => console.error(error));
   }
-
-  create(data) {
-    const newCategory = {
-      id: faker.datatype.uuid(),
-      ...data,
-    };
-    this.categories.push(newCategory);
+  async create(data) {
+    const newCategory = await models.Category.create(data);
     return newCategory;
   }
   async find() {
-    const queryDB = 'SELECT * FROM tasks';
-    const res = await this.pool.query(queryDB);
-    return res.rows;
+    const res = await models.Category.findAll();
+    return res;
   }
-  findOne(id) {
-    return this.categories.find((category) => category.id === id);
-  }
-  update(id, changes) {
-    const index = this.categories.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new Error('Product not found');
+  async findOne(id) {
+    const category = await models.Category.findByPk(id);
+    if (!category) {
+      throw boom.notFound('category not found!');
     }
-    const category = this.categories[index]
-    this.categories[index] = {
-      ...category,
-      ...changes
-    };
-    return this.categories[index];
+    return category;
   }
-  delete(id) {
-    const index = this.categories.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new Error('Product not found');
-    }
-    this.categories.splice(index, 1);
+  async update(id, changes) {
+    const category = await this.findOne(id);
+    const updates = await category.update(changes);
+    return updates;
+  }
+  async delete(id) {
+    const category = await this.findOne(id);
+    await category.destroy();
     return { id };
   }
 }

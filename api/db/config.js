@@ -1,6 +1,4 @@
-const { Sequelize } = require('sequelize');
 const { config } = require('../config/config');
-const { setupModels } = require('../db/models/index');
 
 const DB_ENGINE = encodeURIComponent(config.dbEngine);
 const PASSWORD = encodeURIComponent(config.dbPassword);
@@ -15,11 +13,15 @@ if (DB_ENGINE === 'mysql') {
 }
 
 const URI = `${DB_ENGINE}://${USER}:${PASSWORD}@${config.dbHost}:${PORT}/${config.dbName}`;
-const sequelize = new Sequelize(URI, {
-  dialect: DB_ENGINE,
-  logging: console.log,
-});
 
-setupModels(sequelize);
+module.exports = {
+  development: {
+    url: URI,
+    dialect: DB_ENGINE
+  },
 
-module.exports = sequelize;
+  production: {
+    url: URI,
+    dialect: DB_ENGINE
+  }
+}

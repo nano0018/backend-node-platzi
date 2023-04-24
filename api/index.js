@@ -6,6 +6,7 @@ const {
   boomErrorHandler,
 } = require('./middlewares/error.handler');
 const cors = require('cors');
+const queryErrorHandler = require('./middlewares/sequelize.handler');
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${PORT}`;
@@ -30,6 +31,7 @@ app.get('/api', (req, res) => {
 routerAPI(app);
 
 // Middlewares
+app.use(queryErrorHandler);
 app.use(logErrors);
 app.use(boomErrorHandler);
 app.use(errorHandler);

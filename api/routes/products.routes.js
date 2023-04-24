@@ -14,14 +14,6 @@ router.get('/', async (req, res) => {
   res.json(products);
 });
 
-// Primero estáticos y particulares
-router.get('/filter', (req, res) => {
-  res.json({
-    msg: 'Under construction!',
-  });
-});
-
-// Luego dinámicos
 router.get(
   '/:id',
   validatorHandler(getProductSchema, 'params'),
@@ -29,13 +21,7 @@ router.get(
     try {
       const { id } = req.params;
       const product = await service.findOne(id);
-      if (!product) {
-        res.json({
-          msg: 'Not found!',
-        });
-      } else {
-        res.json(product);
-      }
+      res.json(product);
     } catch (error) {
       next(error);
     }
@@ -45,10 +31,14 @@ router.get(
 router.post(
   '/',
   validatorHandler(createProductSchema, 'body'),
-  async (req, res) => {
-    const body = req.body;
+  async (req, res, next) => {
+    try {
+      const body = req.body;
     const newProduct = await service.create(body);
     res.status(201).json(newProduct);
+    } catch (error) {
+      next(error);
+    }
   }
 );
 

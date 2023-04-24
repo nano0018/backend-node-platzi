@@ -1,45 +1,32 @@
-const { faker } = require('@faker-js/faker');
-const { pool } = require('../libs/postgres.pool');
+const { models } = require('../libs/sequelize');
+const boom = require('@hapi/boom');
 class UserService {
   constructor() {
     this.users = [];
-    this.pool = pool;
-    this.pool.on('error', (error) => console.error(error));
   }
-  create(data) {
-    const newUser = {
-      id: faker.datatype.uuid(),
-      ...data,
-    };
-    this.users.push(newUser);
+  async create(data) {
+    const newUser = await models.User.create(data);
     return newUser;
   }
   async find() {
-    const queryDB = 'SELECT * FROM tasks';
-    const res = await this.pool.query(queryDB);
-    return res.rows;
+    const res = await models.User.findAll();
+    return res;
   }
-  findOne(id) {
-    return this.users.find((user) => user.id === id);
-  }
-  update(id, changes) {
-    const index = this.users.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new Error('Product not found');
+  async findOne(id) {
+    const user = await models.User.findByPk(id);
+    if (!user) {
+      throw boom.notFound('User not found!');
     }
-    const product = this.users[index];
-    this.users[index] = {
-      ...product,
-      ...changes,
-    };
-    return this.users[index];
+    return user;
   }
-  delete(id) {
-    const index = this.users.findIndex((product) => product.id === id);
-    if (index === -1) {
-      throw new Error('Product not found');
-    }
-    this.users.splice(index, 1);
+  async update(id, changes) {
+    const user = await this.findOne(id);
+    const updates = await user.update(changes);
+    return updates;
+  }
+  async delete(id) {
+    const user = await this.findOne(id);
+    await user.destroy();
     return { id };
   }
 }
