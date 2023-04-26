@@ -1,9 +1,6 @@
 const { models } = require('../libs/sequelize');
 const boom = require('@hapi/boom');
 class CustomerService {
-  constructor() {
-    this.customers = [];
-  }
   async create(data) {
     const newCustomer = await models.Customer.create(data, {
       include: ['user'],
@@ -17,7 +14,9 @@ class CustomerService {
     return res;
   }
   async findOne(id) {
-    const customer = await models.Customer.findByPk(id);
+    const customer = await models.Customer.findByPk(id, {
+      include: ['user'],
+    });
     if (!customer) {
       throw boom.notFound('customer not found!');
     }

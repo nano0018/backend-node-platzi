@@ -2,16 +2,14 @@ const boom = require('@hapi/boom');
 const { models } = require('../libs/sequelize');
 
 class ProductService {
-  constructor() {
-    this.products = [];
-  }
-
   async create(data) {
     const newProduct = await models.Product.create(data);
     return newProduct;
   }
   async find() {
-    const res = await models.Product.findAll();
+    const res = await models.Product.findAll({
+      include: ['category'],
+    });
     return res;
   }
   async findOne(id) {
