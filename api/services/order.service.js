@@ -6,6 +6,12 @@ class OrderService {
     const newOrder = await models.Order.create(data);
     return newOrder;
   }
+
+  async createOrderProduct(data) {
+    const newOrderProduct = await models.OrderProduct.create(data);
+    return newOrderProduct;
+  }
+
   async find() {
     const res = await models.Order.findAll();
     return res;
@@ -17,6 +23,7 @@ class OrderService {
           association: 'customer',
           include: ['user'],
         },
+        'items'
       ],
     });
     if (!order) {

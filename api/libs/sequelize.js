@@ -14,10 +14,15 @@ if (DB_ENGINE === 'mysql') {
   USER = 'root';
 }
 
-const URI = `${DB_ENGINE}://${USER}:${PASSWORD}@${config.dbHost}:${PORT}/${config.dbName}`;
+let URI = `${DB_ENGINE}://${USER}:${PASSWORD}@${config.dbHost}:${PORT}/${config.dbName}`;
+
+if (config.isProd) {
+  URI = `${config.dbURL}?ssl=true`;
+}
+
 const sequelize = new Sequelize(URI, {
   dialect: DB_ENGINE,
-  logging: console.log,
+  logging: config.isProd ? false : console.log,
 });
 
 setupModels(sequelize);
