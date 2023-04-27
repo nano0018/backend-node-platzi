@@ -18,6 +18,7 @@ let URI = `${DB_ENGINE}://${USER}:${PASSWORD}@${config.dbHost}:${PORT}/${config.
 
 if (config.isProd) {
   URI = `${config.dbURL}`;
+  console.log(URI)
 }
 
 const sequelize = new Sequelize(URI, {
