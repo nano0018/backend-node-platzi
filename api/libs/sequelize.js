@@ -17,7 +17,7 @@ if (DB_ENGINE === 'mysql') {
 let URI = `${DB_ENGINE}://${USER}:${PASSWORD}@${config.dbHost}:${PORT}/${config.dbName}`;
 
 if (config.isProd) {
-  URI = `${config.dbURL}?ssl=true`;
+  URI = `${config.dbURL}`;
 }
 
 const sequelize = new Sequelize(URI, {

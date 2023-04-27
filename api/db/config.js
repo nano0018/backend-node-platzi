@@ -15,7 +15,8 @@ if (DB_ENGINE === 'mysql') {
 let URI = `${DB_ENGINE}://${USER}:${PASSWORD}@${config.dbHost}:${PORT}/${config.dbName}`;
 
 if (config.isProd) {
-  URI = `${config.dbURL}?ssl=true`;
+  URI = `${config.dbURL}`;
+  console.log(URI)
 }
 
 module.exports = {
@@ -26,6 +27,10 @@ module.exports = {
 
   production: {
     url: URI,
-    dialect: DB_ENGINE
+    dialect: DB_ENGINE,
+    dialectOptions: {
+      ssl: true,
+      native:true
+    }
   }
 }
