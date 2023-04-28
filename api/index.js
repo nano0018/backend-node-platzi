@@ -7,11 +7,15 @@ const {
 } = require('./middlewares/error.handler');
 const cors = require('cors');
 const queryErrorHandler = require('./middlewares/sequelize.handler');
+const { checkAPIKey } = require('./middlewares/auth.handler')
 const app = express();
 const PORT = process.env.PORT || 3000;
 const FRONTEND_URL = process.env.FRONTEND_URL || `http://localhost:${PORT}`;
 
+// Parsing JSON
 app.use(express.json());
+
+// Activating CORS
 const whiteListCORS = ['http://localhost:8080', FRONTEND_URL];
 const options = {
   origin: (origin, callback) => {
@@ -24,7 +28,16 @@ const options = {
 };
 app.use(cors(options));
 
+// Passport middleware
+require('./utils/auth/index');
+
+// Test endpoint
 app.get('/api', (req, res) => {
+  res.send('Prueba express');
+});
+
+// Test API_KEY endpoint
+app.get('/new-endpoint', checkAPIKey, (req, res) => {
   res.send('Prueba express');
 });
 

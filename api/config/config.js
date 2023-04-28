@@ -9,9 +9,9 @@ const config = {
   dbPassword: process.env.DB_PASSWORD,
   dbHost: process.env.DB_HOST,
   dbPort: process.env.DB_PORT,
-  dbMySQLPort: process.env.MYSQL_PORT,
   dbEngine: process.env.DB_ENGINE,
   dbURL: process.env.DB_URL,
+  apiKey: process.env.API_KEY,
 };
 
 module.exports = { config }
