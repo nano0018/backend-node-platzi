@@ -13,6 +13,9 @@ const config = {
   dbURL: process.env.DB_URL,
   apiKey: process.env.API_KEY,
   jwtKey: process.env.JWT_KEY,
+  jwtRecoveryKey: process.env.JWT_RECOVERY_KEY,
+  recoveryServiceEmail: process.env.BACKEND_MAIL,
+  recoveryServicePassword: process.env.MAIL_PASSWORD,
 };
 
 module.exports = { config }
