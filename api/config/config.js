@@ -12,6 +12,7 @@ const config = {
   dbEngine: process.env.DB_ENGINE,
   dbURL: process.env.DB_URL,
   apiKey: process.env.API_KEY,
+  jwtKey: process.env.JWT_KEY,
 };
 
 module.exports = { config }
